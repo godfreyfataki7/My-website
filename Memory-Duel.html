@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Duel - Fataki Tech Fix</title>
+    <style>
+        :root { --p1-color: #ff4d6d; --p2-color: #34b7f1; --bg: #1a011a; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; min-height: 100vh; }
+        
+        #setup-screen, #game-container { width: 95%; max-width: 500px; margin-top: 20px; }
+        #game-container { display: none; flex-direction: column; align-items: center; }
+        .card-panel { background: #2d0a31; padding: 20px; border-radius: 15px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+
+        input, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; box-sizing: border-box; font-size: 1rem; }
+        button { background: var(--p1-color); color: white; font-weight: bold; cursor: pointer; }
+        
+        .music-player { background: black; padding: 20px; border-radius: 20px; width: 100%; margin: 15px 0; text-align: center; }
+        .player-btns { display: flex; gap: 15px; justify-content: center; align-items: center; margin-top: 10px; }
+        .ctrl-icon { width: 50px; height: 50px; border-radius: 50%; background: #333; color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+
+        .scoreboard { display: flex; width: 100%; justify-content: space-around; margin-bottom: 10px; }
+        .score-box { padding: 10px; border-radius: 10px; border: 3px solid transparent; flex: 1; text-align: center; margin: 0 5px; background: #3d0e42; }
+        .active-p1 { border-color: var(--p1-color); box-shadow: 0 0 15px var(--p1-color); }
+        .active-p2 { border-color: var(--p2-color); box-shadow: 0 0 15px var(--p2-color); }
+
+        .game-grid { display: grid; gap: 8px; margin: 15px 0; width: 100%; }
+        .card { background: #4a1033; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; position: relative; transform-style: preserve-3d; transition: transform 0.3s; aspect-ratio: 1/1; }
+        .card.flipped { transform: rotateY(180deg); background: #fff; }
+        .card-back { transform: rotateY(180deg); position: absolute; backface-visibility: hidden; }
+        .card-front { position: absolute; backface-visibility: hidden; }
+        
+        #status-msg { margin: 10px; font-weight: bold; font-size: 1.2rem; text-align: center; min-height: 1.5em; }
+        .nav-btns { display: flex; gap: 10px; width: 100%; }
+        .settings-btn { background: #555; }
+
+        /* Style ya ziada kwa ajili ya link za mawasiliano */
+        .dev-contact { margin-top: 20px; padding-top: 15px; border-top: 1px solid #444; font-size: 0.9rem; text-align: center; }
+        .dev-contact a { color: #00ffcc; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div id="setup-screen" class="card-panel">
+    <h2 style="text-align: center;">Memory Duel</h2>
+    <div id="download-status" style="font-size: 0.7rem; color: #00ffcc; margin-bottom: 5px;">Checking offline music...</div>
+    
+    <select id="game-mode" onchange="toggleNameInput()">
+        <option value="pvp">Player vs Player</option>
+        <option value="pvc">Player vs Computer</option>
+    </select>
+
+    <input type="text" id="p1-name-in" placeholder="Player 1 Name" value="Player 1">
+    <input type="text" id="p2-name-in" placeholder="Player 2 Name" value="Player 2">
+    
+    <select id="grid-size">
+        <option value="16">Easy (4x4)</option>
+        <option value="36">Normal (6x6)</option>
+        <option value="64">Hard (8x8)</option>
+    </select>
+
+    <input type="file" id="user-music" accept="audio/*" multiple>
+    <button onclick="startGame(true)">START GAME</button>
+
+    <div class="dev-contact">
+        <p>Follow for More content from <strong>Fataki Tech:</strong></p>
+        <a href="https://whatsapp.com/channel/0029VbBtobv0G0XjeTx7E92o" target="_blank">WhatsApp Channel</a> | 
+        <a href="https://www.tiktok.com/@godfreyfataki7" style="color:red;" target="_blank">TikTok</a>
+        <p>Feedback: <a href="https://wa.me/255768175288" target="_blank">Chat on WhatsApp</a></p>
+    </div>
+</div>
+
+<div id="game-container">
+    <div class="scoreboard">
+        <div id="box-p1" class="score-box active-p1"><span id="p1-label">P1</span>: <span id="s1">0</span></div>
+        <div id="box-p2" class="score-box"><span id="p2-label">P2</span>: <span id="s2">0</span></div>
+    </div>
+
+    <div id="status-msg"></div>
+    <div class="game-grid" id="grid"></div>
+
+    <div class="music-player">
+        <div style="font-size: 0.85rem; color: #888;" id="track-name">Default Music</div>
+        <div class="player-btns">
+            <button class="ctrl-icon" onclick="prevTrack()">⏮</button>
+            <button class="ctrl-icon" id="play-pause-btn" onclick="togglePlay()">⏸</button>
+            <button class="ctrl-icon" onclick="nextTrack()">⏭</button>
+        </div>
+        <audio id="bg-audio" loop></audio>
+    </div>
+
+    <div class="nav-btns">
+        <button onclick="startGame(false)">Replay</button>
+        <button class="settings-btn" onclick="backToSettings()">Settings</button>
+    </div>
+</div>
+
+<script>
+    const emojiBank = ['🌹','💍','🥂','💘','🍫','🎁','💌','🧸','🎈','💄','💎','🕯️','🍰','🍓','🍷','🎻','🌈','🔥','⭐','🌙','🍏','🍉','🍒','🥑','🍔','🍕','🎮','🎨','🎭','🏀','⚽','🛹','🚲','🚀','🛸','🦁','🐱','🐶','🐘','🍦','🍭','🍯','👑','✨'];
+    let flippedCards = [], scores = [0, 0], currentPlayer = 0, canFlip = true, isComputerMode = false, playlist = [], currentTrackIdx = 0;
+    let aiMemory = {}; 
+
+    const audio = document.getElementById('bg-audio');
+    const DEFAULT_AUDIO_URL = "https://raw.githubusercontent.com/godfreyfataki7/Love-/main/Perfect.mp3";
+
+    let db;
+    const request = indexedDB.open("MusicDB", 1);
+    request.onupgradeneeded = (e) => e.target.result.createObjectStore("songs");
+    request.onsuccess = (e) => { db = e.target.result; checkDefaultMusic(); };
+
+    function checkDefaultMusic() {
+        const tx = db.transaction("songs", "readonly");
+        const req = tx.objectStore("songs").get("default-track");
+        req.onsuccess = () => { if (!req.result) downloadDefault(); else document.getElementById('download-status').innerText = "Offline ready! ✅"; };
+    }
+
+    async function downloadDefault() {
+        try {
+            const resp = await fetch(DEFAULT_AUDIO_URL);
+            const blob = await resp.blob();
+            db.transaction("songs", "readwrite").objectStore("songs").put(blob, "default-track");
+            document.getElementById('download-status').innerText = "Offline ready! ✅";
+        } catch(e) { document.getElementById('download-status').innerText = "Online streaming."; }
+    }
+
+    function toggleNameInput() {
+        document.getElementById('p2-name-in').style.display = (document.getElementById('game-mode').value === 'pvc') ? 'none' : 'block';
+    }
+
+    async function setupPlaylist() {
+        const files = document.getElementById('user-music').files;
+        playlist = [];
+        if (files.length > 0) {
+            for (let f of files) playlist.push({ name: f.name, url: URL.createObjectURL(f) });
+        } else {
+            const tx = db.transaction("songs", "readonly");
+            const blob = await new Promise(r => {
+                const req = tx.objectStore("songs").get("default-track");
+                req.onsuccess = () => r(req.result);
+            });
+            playlist.push({ name: "Perfect - Fataki Tech", url: blob ? URL.createObjectURL(blob) : DEFAULT_AUDIO_URL });
+        }
+        loadTrack(0);
+    }
+
+    function loadTrack(idx) {
+        if (!playlist[idx]) return;
+        audio.src = playlist[idx].url;
+        document.getElementById('track-name').innerText = playlist[idx].name;
+        audio.play().catch(() => {});
+        document.getElementById('play-pause-btn').innerText = "⏸";
+    }
+
+    function togglePlay() {
+        if (audio.paused) { audio.play(); document.getElementById('play-pause-btn').innerText = "⏸"; }
+        else { audio.pause(); document.getElementById('play-pause-btn').innerText = "▶"; }
+    }
+
+    function nextTrack() { currentTrackIdx = (currentTrackIdx + 1) % playlist.length; loadTrack(currentTrackIdx); }
+    function prevTrack() { currentTrackIdx = (currentTrackIdx - 1 + playlist.length) % playlist.length; loadTrack(currentTrackIdx); }
+
+    function startGame(fullReset) {
+        if(fullReset) {
+            setupPlaylist();
+            isComputerMode = document.getElementById('game-mode').value === 'pvc';
+            document.getElementById('p1-label').innerText = document.getElementById('p1-name-in').value || "Player 1";
+            document.getElementById('p2-label').innerText = isComputerMode ? "Fataki Tech" : (document.getElementById('p2-name-in').value || "Player 2");
+        }
+        scores = [0, 0]; currentPlayer = 0; flippedCards = []; canFlip = true; aiMemory = {};
+        document.getElementById('s1').innerText = "0"; document.getElementById('s2').innerText = "0";
+        document.getElementById('setup-screen').style.display = 'none';
+        document.getElementById('game-container').style.display = 'flex';
+        initGrid();
+    }
+
+    function initGrid() {
+        const grid = document.getElementById('grid');
+        const size = parseInt(document.getElementById('grid-size').value);
+        grid.style.gridTemplateColumns = `repeat(${Math.sqrt(size)}, 1fr)`;
+        let selectedEmojis = [...emojiBank].sort(() => 0.5 - Math.random()).slice(0, size/2);
+        let gameIcons = [...selectedEmojis, ...selectedEmojis].sort(() => 0.5 - Math.random());
+        grid.innerHTML = '';
+        gameIcons.forEach((icon, index) => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.dataset.icon = icon;
+            card.dataset.index = index;
+            card.innerHTML = `<div class="card-front">❓</div><div class="card-back">${icon}</div>`;
+            card.addEventListener('click', function() { 
+                if(canFlip) {
+                    if(!isComputerMode || (isComputerMode && currentPlayer === 0)) {
+                        handleMove(this);
+                    }
+                }
+            });
+            grid.appendChild(card);
+        });
+        updateTurnUI();
+    }
+
+    function handleMove(card) {
+        if (card.classList.contains('flipped') || flippedCards.length >= 2) return;
+        
+        aiMemory[card.dataset.index] = card.dataset.icon;
+        card.classList.add('flipped');
+        flippedCards.push(card);
+
+        if (flippedCards.length === 2) {
+            canFlip = false;
+            setTimeout(checkMatch, 700);
+        }
+    }
+
+    function checkMatch() {
+        const [c1, c2] = flippedCards;
+        if (c1.dataset.icon === c2.dataset.icon) {
+            scores[currentPlayer]++;
+            document.getElementById(`s${currentPlayer + 1}`).innerText = scores[currentPlayer];
+            delete aiMemory[c1.dataset.index];
+            delete aiMemory[c2.dataset.index];
+            flippedCards = [];
+            
+            if (document.querySelectorAll('.card:not(.flipped)').length === 0) {
+                return checkWin();
+            }
+
+            canFlip = true; 
+            if(isComputerMode && currentPlayer === 1) {
+                canFlip = false;
+                setTimeout(computerTurn, 500);
+            }
+        } else {
+            setTimeout(() => {
+                c1.classList.remove('flipped');
+                c2.classList.remove('flipped');
+                flippedCards = [];
+                currentPlayer = (currentPlayer === 0) ? 1 : 0;
+                updateTurnUI();
+                
+                if(isComputerMode && currentPlayer === 1) {
+                    canFlip = false; 
+                    setTimeout(computerTurn, 600);
+                } else {
+                    canFlip = true;
+                }
+            }, 600);
+        }
+    }
+
+    function computerTurn() {
+        if (!isComputerMode || currentPlayer !== 1) return;
+        const available = Array.from(document.querySelectorAll('.card:not(.flipped)'));
+        if (available.length < 2) return;
+
+        let card1, card2;
+        const entries = Object.entries(aiMemory);
+        
+        for (let i = 0; i < entries.length; i++) {
+            for (let j = i + 1; j < entries.length; j++) {
+                if (entries[i][1] === entries[j][1]) {
+                    card1 = document.querySelector(`[data-index="${entries[i][0]}"]`);
+                    card2 = document.querySelector(`[data-index="${entries[j][0]}"]`);
+                    if (card1 && !card1.classList.contains('flipped')) break;
+                }
+            }
+            if (card1) break;
+        }
+
+        if (!card1) {
+            card1 = available[Math.floor(Math.random() * available.length)];
+            const matchIdx = Object.keys(aiMemory).find(idx => aiMemory[idx] === card1.dataset.icon && idx != card1.dataset.index);
+            card2 = matchIdx ? document.querySelector(`[data-index="${matchIdx}"]`) : available.filter(c => c !== card1)[Math.floor(Math.random() * (available.length - 1))];
+        }
+
+        setTimeout(() => {
+            handleMove(card1);
+            setTimeout(() => {
+                handleMove(card2);
+            }, 600);
+        }, 400);
+    }
+
+    function updateTurnUI() {
+        document.getElementById('box-p1').classList.toggle('active-p1', currentPlayer === 0);
+        document.getElementById('box-p2').classList.toggle('active-p2', currentPlayer === 1);
+        const name = document.getElementById(currentPlayer === 0 ? 'p1-label' : 'p2-label').innerText;
+        document.getElementById('status-msg').innerText = `${name}'s Turn`;
+    }
+
+    function checkWin() {
+        const p1 = document.getElementById('p1-label').innerText;
+        const p2 = document.getElementById('p2-label').innerText;
+        let winner;
+        if (scores[0] > scores[1]) winner = p1;
+        else if (scores[1] > scores[0]) winner = p2;
+        else winner = "It's a Tie!";
+
+        document.getElementById('status-msg').innerHTML = `<span style="color:#00ffcc; font-size:1.4rem;">Winner: ${winner}!</span>`;
+        canFlip = false;
+    }
+
+    function backToSettings() { document.getElementById('game-container').style.display = 'none'; document.getElementById('setup-screen').style.display = 'block'; }
+    audio.onended = nextTrack;
+</script>
+
+</body>
+</html>

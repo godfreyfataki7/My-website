@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fataki Engine - System Profile</title>
+    <!-- Tailwind CSS kwa muonekano wa kasi na kisasa -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { transition: background-color 0.3s, color 0.3s; }
+        .profile-card:hover { box-shadow: 0 0 20px rgba(168, 85, 247, 0.2); border-color: #a855f7; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50 min-h-screen flex flex-col font-sans">
+
+    <!-- TOP NAVIGATION -->
+    <header class="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 sticky top-0 z-50 backdrop-blur">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center space-x-2 group">
+                <i class="fa-solid fa-arrow-left text-slate-500 group-hover:text-purple-500 transition-colors"></i>
+                <span class="font-bold text-sm tracking-wider">PORTAL HOME</span>
+            </a>
+            <button id="themeToggle" class="p-2 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-yellow-400">
+                <i id="themeIcon" class="fa-solid fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- PROFILE CONTAINER -->
+    <main class="flex-grow max-w-2xl mx-auto px-4 py-10 w-full">
+        
+        <!-- MAIN CORE SPECS CARD -->
+        <div class="profile-card border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 p-6 rounded-2xl shadow-md mb-6 transition-all duration-300">
+            <div class="text-center mb-6">
+                <div class="w-20 h-20 bg-purple-500/10 rounded-full flex items-center justify-center text-purple-500 mx-auto mb-3 border border-purple-500/20 shadow-inner">
+                    <i class="fa-solid fa-user-gear text-4xl"></i>
+                </div>
+                <h1 class="text-2xl font-extrabold tracking-tight">ENGINEER CORE PROFILE</h1>
+                <p class="text-xs text-purple-500 dark:text-purple-400 font-mono mt-1">Apostle Fataki Assistant Dev Node</p>
+            </div>
+
+            <!-- DEVELOPER IDENTITY INFO -->
+            <div class="space-y-3 border-t border-slate-100 dark:border-slate-800/60 pt-4 mb-6">
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-400"><i class="fa-solid fa-code-branch mr-2"></i>Lead Developer:</span>
+                    <span class="font-semibold tracking-wide">Godfrey (Fataki Tech)</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-400"><i class="fa-solid fa-layer-group mr-2"></i>Core Architecture:</span>
+                    <span class="font-mono text-xs bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">Node.js / Baileys Lib</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-400"><i class="fa-solid fa-database mr-2"></i>Session Registry:</span>
+                    <span class="font-mono text-xs text-green-500 bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20">MongoDB Atlas</span>
+                </div>
+            </div>
+
+            <!-- LIVE CLUSTER STATUS METRICS -->
+            <h3 class="text-xs font-bold text-slate-400 tracking-wider uppercase mb-3 font-mono">Dynamic Cluster Metrics</h3>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-slate-100 dark:bg-slate-800/40 p-3 rounded-xl border border-slate-200/50 dark:border-slate-800/50">
+                    <p class="text-[10px] text-slate-400 font-mono uppercase">Operational State</p>
+                    <p class="text-sm font-bold text-green-500 mt-1 flex items-center">
+                        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></span> ACTIVE V10.2
+                    </p>
+                </div>
+                <div class="bg-slate-100 dark:bg-slate-800/40 p-3 rounded-xl border border-slate-200/50 dark:border-slate-800/50">
+                    <p class="text-[10px] text-slate-400 font-mono uppercase">Staging Server</p>
+                    <p class="text-sm font-bold text-blue-500 mt-1"><i class="fa-solid fa-cloud-arrow-up mr-1 text-xs"></i> Render Cloud</p>
+                </div>
+                <div class="bg-slate-100 dark:bg-slate-800/40 p-3 rounded-xl border border-slate-200/50 dark:border-slate-800/50">
+                    <p class="text-[10px] text-slate-400 font-mono uppercase">API Environment</p>
+                    <p class="text-xs font-bold mt-1 text-slate-700 dark:text-slate-300">Gemini / Groq AI Matrix</p>
+                </div>
+                <div class="bg-slate-100 dark:bg-slate-800/40 p-3 rounded-xl border border-slate-200/50 dark:border-slate-800/50">
+                    <p class="text-[10px] text-slate-400 font-mono uppercase">Local Console</p>
+                    <p class="text-xs font-bold mt-1 text-orange-400 font-mono"><i class="fa-solid fa-terminal mr-1 text-[10px]"></i> Termux Environment</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- REPO & CONTACT FOOTNOTE -->
+        <div class="text-center space-y-2 mt-4">
+            <a href="https://github.com/godfreyfataki7" target="_blank" class="inline-flex items-center text-xs bg-slate-200 dark:bg-slate-800/80 hover:bg-purple-600 hover:text-white px-4 py-2 rounded-xl transition-all font-medium">
+                <i class="fa-brands fa-github mr-2 text-sm"></i> View Source Git Repository
+            </a>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-200 dark:border-slate-800 text-center py-6 text-xs text-slate-400">
+        &copy; 2026 FATAKI TECH SOLUTIONS. Restricted Dev Access.
+    </footer>
+
+    <!-- INTERACTIVE THEME MANAGEMENT -->
+    <script>
+        const htmlElement = document.documentElement;
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+
+        if (localStorage.getItem('theme') === 'light') {
+            htmlElement.classList.remove('dark');
+            themeIcon.className = 'fa-solid fa-sun';
+        } else {
+            htmlElement.classList.add('dark');
+            themeIcon.className = 'fa-solid fa-moon';
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            if (htmlElement.classList.contains('dark')) {
+                htmlElement.classList.remove('dark');
+                themeIcon.className = 'fa-solid fa-sun';
+                localStorage.setItem('theme', 'light');
+            } else {
+                htmlElement.classList.add('dark');
+                themeIcon.className = 'fa-solid fa-moon';
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+    </script>
+</body>
+</html>

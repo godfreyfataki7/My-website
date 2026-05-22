@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess the Number - Fataki Tech</title>
+    <style>
+        :root {
+            --primary: #007bff;
+            --success: #28a745;
+            --danger: #dc3545;
+            --dark: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 2.5em;
+            text-align: center;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .game-container {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .level-selector {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .level-btn {
+            background: #e9ecef;
+            border: 2px solid transparent;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .level-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        input[type="number"] {
+            width: 80%;
+            padding: 12px;
+            font-size: 18px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            outline: none;
+        }
+
+        .main-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 85%;
+            transition: transform 0.2s;
+        }
+
+        .main-btn:active { transform: scale(0.95); }
+
+        #message {
+            margin-top: 20px;
+            font-weight: bold;
+            min-height: 1.5em;
+        }
+
+        #guessesList {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+            text-align: left;
+            max-height: 150px;
+            overflow-y: auto;
+            border-top: 1px solid #eee;
+        }
+
+        .guess-item {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        footer a {
+            text-decoration: none;
+            font-weight: bold;
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>GUESS THE NUMBER</h1>
+
+    <div class="game-container">
+        <p>Select Difficulty:</p>
+        <div class="level-selector">
+            <button class="level-btn active" onclick="setLevel(50, this)">1-50</button>
+            <button class="level-btn" onclick="setLevel(100, this)">1-100</button>
+            <button class="level-btn" onclick="setLevel(200, this)">1-200</button>
+        </div>
+
+        <p id="instruction">Guess a number between 1 and 50</p>
+        
+        <input type="number" id="guessInput" placeholder="Enter number...">
+        <button class="main-btn" id="submitBtn" onclick="checkGuess()">SUBMIT GUESS</button>
+        
+        <p id="message"></p>
+        <button id="resetBtn" class="main-btn" style="background: var(--success); display:none;" onclick="resetGame()">PLAY AGAIN</button>
+
+        <ul id="guessesList"></ul>
+    </div>
+
+    <footer>
+        <p>Developed by <strong>Fataki Tech Solutions</strong></p>
+        <a href="https://wa.me/255768175288" style="color: #25D366;">WhatsApp support</a>
+        <a href="https://www.tiktok.com/@godfreyfataki7" style="color: #ff0050;">TikTok</a>
+    </footer>
+
+    <script>
+        let randomNumber;
+        let attempts = 0;
+        let maxAttempts = 7;
+        let currentMax = 50;
+        let gameOver = false;
+
+        function setLevel(max, btn) {
+            currentMax = max;
+            document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('instruction').textContent = `Guess a number between 1 and ${max}`;
+            resetGame();
+        }
+
+        function generateNumber() {
+            randomNumber = Math.floor(Math.random() * currentMax) + 1;
+        }
+
+        function checkGuess() {
+            if(gameOver) return;
+
+            const input = document.getElementById('guessInput');
+            const msg = document.getElementById('message');
+            const list = document.getElementById('guessesList');
+            const val = parseInt(input.value);
+
+            if (isNaN(val) || val < 1 || val > currentMax) {
+                msg.textContent = "Invalid range!";
+                msg.style.color = "orange";
+                return;
+            }
+
+            attempts++;
+            let feedback = "";
+            
+            if (val === randomNumber) {
+                msg.textContent = `🎉 Correct! You won in ${attempts} tries!`;
+                msg.style.color = "green";
+                endGame();
+            } else if (attempts >= maxAttempts) {
+                msg.textContent = `😢 Game Over! The number was ${randomNumber}`;
+                msg.style.color = "red";
+                endGame();
+            } else {
+                feedback = val < randomNumber ? "Too Low! ↓" : "Too High! ↑";
+                msg.textContent = feedback;
+                msg.style.color = "red";
+            }
+
+            const li = document.createElement('li');
+            li.className = "guess-item";
+            li.textContent = `Attempt ${attempts}: ${val} (${feedback || 'Winner!'})`;
+            list.prepend(li);
+
+            input.value = "";
+            input.focus();
+        }
+
+        function endGame() {
+            gameOver = true;
+            document.getElementById('submitBtn').style.display = "none";
+            document.getElementById('resetBtn').style.display = "inline-block";
+            document.getElementById('guessInput').disabled = true;
+        }
+
+        function resetGame() {
+            generateNumber();
+            attempts = 0;
+            gameOver = false;
+            document.getElementById('message').textContent = "";
+            document.getElementById('guessesList').innerHTML = "";
+            document.getElementById('guessInput').disabled = false;
+            document.getElementById('guessInput').value = "";
+            document.getElementById('submitBtn').style.display = "inline-block";
+            document.getElementById('resetBtn').style.display = "none";
+        }
+
+        window.onload = generateNumber;
+    </script>
+</body>
+</html>

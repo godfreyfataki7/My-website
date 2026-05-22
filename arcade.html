@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fataki Arcade Hub</title>
+    <!-- Tailwind CSS kwa ajili ya muonekano wa kisasa -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { transition: background-color 0.3s, color 0.3s; }
+        .arcade-card:hover { box-shadow: 0 0 25px rgba(34, 197, 94, 0.25); border-color: #22c55e; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50 min-h-screen flex flex-col">
+
+    <!-- TOP NAVIGATION -->
+    <header class="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 sticky top-0 z-50 backdrop-blur">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center space-x-2 group">
+                <i class="fa-solid fa-arrow-left text-slate-500 group-hover:text-green-500 transition-colors"></i>
+                <span class="font-bold text-sm tracking-wider">PORTAL HOME</span>
+            </a>
+            <div class="flex items-center space-x-4">
+                <span class="text-xs bg-green-500/10 text-green-500 px-2.5 py-1 rounded-full font-mono border border-green-500/20">ARCADE V2.0</span>
+                <button id="themeToggle" class="p-2 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-yellow-400">
+                    <i id="themeIcon" class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN DASHBOARD -->
+    <main class="flex-grow max-w-6xl mx-auto px-4 py-12 w-full">
+        <section class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold tracking-tight mb-3">
+                FATAKI <span class="text-green-500">PLAYGROUND</span>
+            </h1>
+            <p class="text-slate-500 dark:text-slate-400 max-w-md mx-auto text-sm">
+                Chagua mchezo unaotaka kucheza hapa chini. Kila mchezo utafunguka kwenye ukurasa wake maalum.
+            </p>
+        </section>
+
+        <!-- SELECTION GRID CONTROLLER -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            
+            <!-- GAME 1: TIMED MATH CHALLENGE -->
+            <div class="arcade-card border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 p-6 rounded-2xl flex flex-col justify-between transition-all duration-300 transform hover:-translate-y-1">
+                <div>
+                    <div class="w-12 h-12 bg-teal-500/10 rounded-xl flex items-center justify-center text-teal-500 mb-4">
+                        <i class="fa-solid fa-calculator text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Math Master</h3>
+                    <p class="text-slate-500 dark:text-slate-400 text-xs mb-6">
+                        Race against the clock solving algorithmic equations based on custom rulesets.
+                    </p>
+                </div>
+                <!-- Inalnk moja kwa moja kwenda kwenye faili lake maalum -->
+                <a href="TimedMath-Challenge.html" class="w-full text-center bg-teal-600 hover:bg-teal-700 text-white font-medium py-2.5 px-4 rounded-xl text-sm transition-colors inline-block">
+                    Launch Arena
+                </a>
+            </div>
+
+            <!-- GAME 2: MEMORY DUEL -->
+            <div class="arcade-card border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 p-6 rounded-2xl flex flex-col justify-between transition-all duration-300 transform hover:-translate-y-1">
+                <div>
+                    <div class="w-12 h-12 bg-pink-500/10 rounded-xl flex items-center justify-center text-pink-500 mb-4">
+                        <i class="fa-solid fa-brain text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Memory Duel</h3>
+                    <p class="text-slate-500 dark:text-slate-400 text-xs mb-6">
+                        Test retention matching pairs against a localized machine AI engine or physical opponents.
+                    </p>
+                </div>
+                <!-- Inalnk moja kwa moja kwenda kwenye faili lake maalum kwa usahihi -->
+                <a href="Memory-Duel.html" class="w-full text-center bg-pink-600 hover:bg-pink-700 text-white font-medium py-2.5 px-4 rounded-xl text-sm transition-colors inline-block">
+                    Launch Arena
+                </a>
+            </div>
+
+            <!-- GAME 3: GUESS THE NUMBER -->
+            <div class="arcade-card border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 p-6 rounded-2xl flex flex-col justify-between transition-all duration-300 transform hover:-translate-y-1">
+                <div>
+                    <div class="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-500 mb-4">
+                        <i class="fa-solid fa-binary text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Guess Number</h3>
+                    <p class="text-slate-500 dark:text-slate-400 text-xs mb-6">
+                        Deduce micro-targeted randomized numerical values inside variable mathematical bounds safely.
+                    </p>
+                </div>
+                <!-- Inalnk moja kwa moja kwenda kwenye faili lake maalum -->
+                <a href="Guess-the-number.html" class="w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-xl text-sm transition-colors inline-block">
+                    Launch Arena
+                </a>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-200 dark:border-slate-800 text-center py-6 text-xs text-slate-400">
+        &copy; 2026 FATAKI TECH SOLUTIONS. All Engineering Operations Reserved.
+    </footer>
+
+    <!-- LIGHT/DARK INTERACTION SCRIPT -->
+    <script>
+        const htmlElement = document.documentElement;
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+
+        if (localStorage.getItem('theme') === 'light') {
+            htmlElement.classList.remove('dark');
+            themeIcon.className = 'fa-solid fa-sun';
+        } else {
+            htmlElement.classList.add('dark');
+            themeIcon.className = 'fa-solid fa-moon';
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            if (htmlElement.classList.contains('dark')) {
+                htmlElement.classList.remove('dark');
+                themeIcon.className = 'fa-solid fa-sun';
+                localStorage.setItem('theme', 'light');
+            } else {
+                htmlElement.classList.add('dark');
+                themeIcon.className = 'fa-solid fa-moon';
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+    </script>
+</body>
+</html>

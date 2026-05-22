@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TimedMath Challenge - Levels</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f4f8;
+            margin: 0;
+            color: #333;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        h1 {
+            color: #00796b;
+            margin: 15px 0;
+            font-size: 2.2em;
+            text-align: center;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .game-container {
+            background-color: #fffff;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            box-sizing: border-box;
+            min-height: 450px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .hidden { display: none !important; }
+
+        /* Level Buttons */
+        .level-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 15px;
+            font-size: 1.1em;
+            background-color: #00897b;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .btn:active { transform: scale(0.95); opacity: 0.9; }
+        
+        .btn-mixed {
+            grid-column: span 2;
+            background-color: #1a237e;
+        }
+
+        #timer { font-size: 1.5em; font-weight: bold; color: #d32f2f; margin-bottom: 10px; }
+        #question { font-size: 3.5em; margin-bottom: 20px; color: #212121; font-weight: 800; }
+        
+        #answer-input {
+            padding: 15px;
+            font-size: 1.8em;
+            width: 100%;
+            margin-bottom: 15px;
+            border: 3px solid #eee;
+            border-radius: 12px;
+            text-align: center;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        #answer-input:focus { border-color: #00897b; }
+
+        #feedback { margin-top: 10px; font-size: 1.2em; font-weight: bold; min-height: 1.5em; }
+        .correct { color: #2e7d32; }
+        .incorrect { color: #c62828; }
+
+        footer { margin-top: 20px; font-size: 0.8em; color: #777; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <h1><Marquee direction="left to right">Math Master</Marquee></h1>
+
+    <div class="game-container">
+        
+        <div id="level-screen">
+            <p style="font-size: 1.2em; font-weight: bold;">Choose Your Challenge:</p>
+            <div class="level-grid">
+                <button class="btn" onclick="startGame('addition')">Addition (+)</button>
+                <button class="btn" onclick="startGame('subtraction')">Subtraction (-)</button>
+                <button class="btn" onclick="startGame('multiplication')">Multiplication (×)</button>
+                <button class="btn" onclick="startGame('division')">Division (÷)</button>
+                <button class="btn btn-mixed" onclick="startGame('mixed')">MIXED (BODMAS)</button>
+            </div>
+        </div>
+
+        <div id="gameplay-section" class="hidden">
+            <div id="timer">Time: 10s</div>
+            <div id="question">--</div>
+            <input type="number" id="answer-input" inputmode="numeric" placeholder="?">
+            <button id="submit-button" class="btn" style="width:100%">SUBMIT</button>
+            <div id="feedback"></div>
+            <div id="score-display" style="margin-top:10px; color:#666;">Score: 0</div>
+        </div>
+
+        <div id="gameOverSection" class="hidden">
+            <h2 style="color: #d32f2f;">Game Over!</h2>
+            <p id="finalScore" style="font-size: 1.5em;"></p>
+            <button class="btn" style="width:100%" onclick="showLevelScreen()">Main Menu</button>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>&copy;2026 Fataki Techsolution | <a href="https://wa.me/255768175288" style="color:#00796b; text-decoration:none; font-weight:bold;">WhatsApp</a></p>
+        <p> | <a href="https://whatsapp.com/channel/0029VbBtobv0G0XjeTx7E92o" style="color:#27ae60; text-decoration:none; font-weight:bold;">Whatsapp channel</a></p>
+    </footer>
+
+    <script>
+        let score = 0;
+        let correctAnswer;
+        let timeLeft = 10;
+        let timerInterval;
+        let currentLevel = 'mixed';
+        let gameActive = false;
+
+        const levelScreen = document.getElementById('level-screen');
+        const gameplaySection = document.getElementById('gameplay-section');
+        const gameOverSection = document.getElementById('gameOverSection');
+        const questionElement = document.getElementById('question');
+        const answerInput = document.getElementById('answer-input');
+        const feedbackElement = document.getElementById('feedback');
+        const timerElement = document.getElementById('timer');
+        const scoreDisplay = document.getElementById('score-display');
+
+        function showLevelScreen() {
+            gameOverSection.classList.add('hidden');
+            gameplaySection.classList.add('hidden');
+            levelScreen.classList.remove('hidden');
+        }
+
+        function startGame(level) {
+            currentLevel = level;
+            score = 0;
+            scoreDisplay.textContent = `Score: 0`;
+            gameActive = true;
+            
+            levelScreen.classList.add('hidden');
+            gameOverSection.classList.add('hidden');
+            gameplaySection.classList.remove('hidden');
+            
+            generateQuestion();
+        }
+
+        function generateQuestion() {
+            if (!gameActive) return;
+            feedbackElement.textContent = '';
+            answerInput.value = '';
+            answerInput.focus();
+
+            let num1, num2, op;
+            const ops = ['+', '-', '×', '÷'];
+            
+            // Determine operation based on level
+            if (currentLevel === 'mixed') {
+                op = ops[Math.floor(Math.random() * ops.length)];
+            } else {
+                const map = { 'addition': '+', 'subtraction': '-', 'multiplication': '×', 'division': '÷' };
+                op = map[currentLevel];
+            }
+
+            // Logic for clean numbers
+            if (op === '+') {
+                num1 = Math.floor(Math.random() * 20) + 1;
+                num2 = Math.floor(Math.random() * 20) + 1;
+                correctAnswer = num1 + num2;
+            } else if (op === '-') {
+                num1 = Math.floor(Math.random() * 20) + 10;
+                num2 = Math.floor(Math.random() * num1) + 1;
+                correctAnswer = num1 - num2;
+            } else if (op === '×') {
+                num1 = Math.floor(Math.random() * 12) + 1;
+                num2 = Math.floor(Math.random() * 10) + 1;
+                correctAnswer = num1 * num2;
+            } else if (op === '÷') {
+                num2 = Math.floor(Math.random() * 10) + 1;
+                correctAnswer = Math.floor(Math.random() * 10) + 1;
+                num1 = num2 * correctAnswer;
+            }
+
+            questionElement.textContent = `${num1} ${op} ${num2}`;
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timeLeft = 10;
+            timerElement.textContent = `Time: ${timeLeft}s`;
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = `Time: ${timeLeft}s`;
+                if (timeLeft <= 0) endGame("Time's Up!");
+            }, 1000);
+        }
+
+        function checkAnswer() {
+            const userAns = parseInt(answerInput.value);
+            if (isNaN(userAns)) return;
+
+            if (userAns === correctAnswer) {
+                score++;
+                scoreDisplay.textContent = `Score: ${score}`;
+                feedbackElement.textContent = "Correct! 🎯";
+                feedbackElement.className = "correct";
+                clearInterval(timerInterval);
+                setTimeout(generateQuestion, 600);
+            } else {
+                endGame(`Wrong! Correct was ${correctAnswer}`);
+            }
+        }
+
+        function endGame(msg) {
+            gameActive = false;
+            clearInterval(timerInterval);
+            gameplaySection.classList.add('hidden');
+            gameOverSection.classList.remove('hidden');
+            document.getElementById('finalScore').textContent = `${msg} | Final Score: ${score}`;
+        }
+
+        document.getElementById('submit-button').addEventListener('click', checkAnswer);
+        answerInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') checkAnswer(); });
+    </script>
+</body>
+</html>
