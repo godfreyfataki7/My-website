@@ -108,6 +108,44 @@
 
     <!-- LIGHT/DARK INTERACTION SCRIPT -->
     <script>
+         // 1. Disable Right-Click (Context Menu)
+        document.addEventListener('contextmenu', function (event) {
+            event.preventDefault();
+        });
+
+        // 2. Disable Keyboard Shortcuts for Developer Tools and Source Viewing
+        document.addEventListener('keydown', function (event) {
+            // Prevent F12 (Standard DevTools shortcut)
+            if (event.key === 'F12' || event.keyCode === 123) {
+                event.preventDefault();
+            }
+
+            // Prevent Ctrl+U or Cmd+U (View Page Source)
+            if ((event.ctrlKey || event.metaKey) && (event.key === 'U' || event.key === 'u')) {
+                event.preventDefault();
+            }
+
+            // Prevent Ctrl+S or Cmd+S (Save Page As)
+            if ((event.ctrlKey || event.metaKey) && (event.key === 'S' || event.key === 's')) {
+                event.preventDefault();
+            }
+
+            // Prevent Ctrl+Shift+I or Cmd+Option+I (Open Inspector)
+            if ((event.ctrlKey || event.metaKey) && event.shiftKey && (event.key === 'I' || event.key === 'i')) {
+                event.preventDefault();
+            }
+
+            // Prevent Ctrl+Shift+J or Cmd+Option+J (Open Console)
+            if ((event.ctrlKey || event.metaKey) && event.shiftKey && (event.key === 'J' || event.key === 'j')) {
+                event.preventDefault();
+            }
+
+            // Prevent Ctrl+Shift+C or Cmd+Option+C (Inspect Element)
+            if ((event.ctrlKey || event.metaKey) && event.shiftKey && (event.key === 'C' || event.key === 'c')) {
+                event.preventDefault();
+            }
+        });
+        
         const htmlElement = document.documentElement;
         const themeToggleBtn = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');
